@@ -4,14 +4,12 @@ const {registerValidation} = require('../validation')
 
 router.post('/register', async (req, res) => {
     //LETS VALIDATE THE DATA BEFORE MAKE USER
-    const {error} = registerValidation(req.body);
-    if(error) return res.status(400).res.send(error)
-
+    const {error} = registerValidation(req.body)
+    if (error) return res.status(400).send(error.details[0].message)
 
     // Checking if the user is already in the database
-
     const emailExists = await User.findOne({email: req.body.email})
-    if(emailExists) return res.status(400).send("This email aready exists")
+    if (emailExists) return res.status(400).send("This email aready exists")
 
 // CREATE NEW USER
     const user = new User({
@@ -19,10 +17,10 @@ router.post('/register', async (req, res) => {
         email: req.body.email,
         password: req.body.password
     });
-    try{
+    try {
         const savedUser = await user.save()
         res.send(savedUser)
-    }catch(err){
+    } catch (err) {
         res.status(400).send(err)
     }
 })
